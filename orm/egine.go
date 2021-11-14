@@ -2,7 +2,7 @@ package orm
 
 import (
 	"database/sql"
-	"gee/log"
+	"geeorm/log"
 )
 
 type Engine struct {

@@ -2,7 +2,7 @@ package orm
 
 import (
 	"database/sql"
-	"gee/log"
+	"geeorm/log"
 )
 
 func (s *Session) Exec() (result sql.Result, err error) {
