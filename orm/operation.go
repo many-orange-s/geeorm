@@ -2,6 +2,7 @@ package orm
 
 import (
 	"database/sql"
+	"geeorm/clause"
 	"geeorm/log"
 )
 
@@ -27,4 +28,21 @@ func (s *Session) QueryRows() (rows *sql.Rows, err error) {
 		log.Error(err)
 	}
 	return
+}
+
+func (s *Session) Insert(values ...interface{}) (int64, error) {
+	var recordvalues []interface{}
+	for _, value := range values {
+		table := s.Model(value).RefTable()
+		s.clause.Set(clause.INSERT, table.Name, table.FieldNames)
+		recordvalues = append(recordvalues, table.RecordValues(value))
+	}
+
+	s.clause.Set(clause.VALUES, recordvalues...)
+	sqls, vars := s.clause.Build(clause.INSERT, clause.VALUES)
+	result, err := s.Raw(sqls, vars).Exec()
+	if err != nil {
+		return -1, err
+	}
+	return result.RowsAffected()
 }
